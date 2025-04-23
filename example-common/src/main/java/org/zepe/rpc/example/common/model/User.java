@@ -12,7 +12,6 @@ import java.io.Serializable;
  * @datetime 2025/4/23 11:12
  * @description
  */
-@ToString
 @Data
 @Builder
 @AllArgsConstructor

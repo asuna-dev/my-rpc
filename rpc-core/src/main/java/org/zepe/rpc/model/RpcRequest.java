@@ -1,4 +1,4 @@
-package org.zepe.rpc.example.model;
+package org.zepe.rpc.model;
 
 import lombok.*;
 
