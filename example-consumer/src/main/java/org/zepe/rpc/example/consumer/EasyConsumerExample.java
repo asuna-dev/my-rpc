@@ -4,6 +4,7 @@ import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import org.zepe.rpc.example.common.model.User;
 import org.zepe.rpc.example.common.service.UserService;
+import org.zepe.rpc.proxy.ServiceProxyFactory;
 
 /**
  * @author zzpus
@@ -16,7 +17,7 @@ public class EasyConsumerExample {
     public static void main(String[] args) {
 
         //        UserService userService = new UserServiceStaticProxy();
-        UserService userService = ServiceProxyFactory.getProxy(UserService.class);
+        UserService userService = ServiceProxyFactory.getMockProxy(UserService.class);
 
         User user = userService.getUserByName("test");
 

@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
  */
 @Data
 public class RpcConfig {
+    boolean mock = false;
     private String name = "ze-rpc";
     private String version = "0.0.1";
     private String serverHost = "127.0.0.1";
