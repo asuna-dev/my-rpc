@@ -1,8 +1,9 @@
 package org.zepe.rpc.config;
 
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import org.zepe.rpc.serializer.SerializerKeys;
+
+import java.io.Serializable;
 
 /**
  * @author zzpus
@@ -10,10 +11,11 @@ import lombok.NoArgsConstructor;
  * @description
  */
 @Data
-public class RpcConfig {
+public class RpcConfig implements Serializable {
     boolean mock = false;
-    private String name = "ze-rpc";
+    private String serializer = SerializerKeys.JDK;
+    private String name = "default";
     private String version = "0.0.1";
     private String serverHost = "127.0.0.1";
-    private Integer serverPort = 8080;
+    private Integer serverPort = 9876;
 }

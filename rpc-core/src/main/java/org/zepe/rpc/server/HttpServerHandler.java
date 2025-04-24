@@ -1,16 +1,16 @@
 package org.zepe.rpc.server;
 
-import cn.hutool.log.Log;
-import cn.hutool.log.LogFactory;
 import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
+import lombok.extern.slf4j.Slf4j;
+import org.zepe.rpc.RpcApplication;
 import org.zepe.rpc.model.RpcRequest;
 import org.zepe.rpc.model.RpcResponse;
 import org.zepe.rpc.registry.LocalRegistry;
 import org.zepe.rpc.serializer.Serializer;
-import org.zepe.rpc.serializer.impl.JdkSerializer;
+import org.zepe.rpc.serializer.SerializerFactory;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -20,8 +20,8 @@ import java.lang.reflect.Method;
  * @datetime 2025/4/23 20:04
  * @description
  */
+@Slf4j
 public class HttpServerHandler implements Handler<HttpServerRequest> {
-    private static final Log log = LogFactory.get();
 
     @Override
     public void handle(HttpServerRequest request) {
@@ -32,7 +32,7 @@ public class HttpServerHandler implements Handler<HttpServerRequest> {
             return;
         }
 
-        final Serializer serializer = new JdkSerializer();
+        final Serializer serializer = SerializerFactory.getSerializer(RpcApplication.getRpcConfig().getSerializer());
 
         request.bodyHandler(body -> {
             byte[] bytes = body.getBytes();
@@ -42,7 +42,7 @@ public class HttpServerHandler implements Handler<HttpServerRequest> {
             try {
                 rpcRequest = serializer.deserialize(bytes, RpcRequest.class);
             } catch (IOException e) {
-                log.error(e);
+                log.error("deserialize error", e);
                 rpcResponse.setException(e);
                 rpcResponse.setMessage("deserialize body to RpcRequest failed");
                 doResponse(request, rpcResponse, serializer);
@@ -63,7 +63,7 @@ public class HttpServerHandler implements Handler<HttpServerRequest> {
                 rpcResponse.setDataType(method.getReturnType());
                 rpcResponse.setMessage("ok");
             } catch (Exception e) {
-                log.error(e);
+                log.error("invoke service error", e);
                 rpcResponse.setMessage(e.getMessage());
                 rpcResponse.setException(e);
             }
@@ -80,7 +80,7 @@ public class HttpServerHandler implements Handler<HttpServerRequest> {
             byte[] bytes = serializer.serialize(rpcResponse);
             response.end(Buffer.buffer(bytes));
         } catch (IOException e) {
-            log.error(e);
+            log.error("response error", e);
             response.end(Buffer.buffer());
         }
 

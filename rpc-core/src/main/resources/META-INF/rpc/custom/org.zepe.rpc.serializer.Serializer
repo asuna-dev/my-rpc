@@ -1,0 +1,2 @@
+jdk=org.zepe.rpc.serializer.impl.JdkSerializer
+hessian=org.zepe.rpc.serializer.impl.HessianSerializer

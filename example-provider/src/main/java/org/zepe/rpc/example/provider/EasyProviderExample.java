@@ -1,9 +1,10 @@
 package org.zepe.rpc.example.provider;
 
+import org.zepe.rpc.RpcApplication;
 import org.zepe.rpc.example.common.service.UserService;
-import org.zepe.rpc.example.registry.LocalRegistry;
-import org.zepe.rpc.example.server.HttpServer;
-import org.zepe.rpc.example.server.VertxHttpServer;
+import org.zepe.rpc.registry.LocalRegistry;
+import org.zepe.rpc.server.HttpServer;
+import org.zepe.rpc.server.VertxHttpServer;
 
 /**
  * @author zzpus
@@ -15,7 +16,7 @@ public class EasyProviderExample {
         LocalRegistry.register(UserService.class.getName(), UserServiceImpl.class);
 
         HttpServer httpServer = new VertxHttpServer();
-        httpServer.doStart(9999);
+        httpServer.doStart(RpcApplication.getRpcConfig().getServerPort());
 
     }
 }

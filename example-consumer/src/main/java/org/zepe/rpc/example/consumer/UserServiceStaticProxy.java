@@ -4,12 +4,14 @@ import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
+import org.zepe.rpc.RpcApplication;
+import org.zepe.rpc.config.RpcConfig;
 import org.zepe.rpc.example.common.model.User;
 import org.zepe.rpc.example.common.service.UserService;
-import org.zepe.rpc.example.model.RpcRequest;
-import org.zepe.rpc.example.model.RpcResponse;
-import org.zepe.rpc.example.serializer.Serializer;
-import org.zepe.rpc.example.serializer.impl.JdkSerializer;
+import org.zepe.rpc.model.RpcRequest;
+import org.zepe.rpc.model.RpcResponse;
+import org.zepe.rpc.serializer.Serializer;
+import org.zepe.rpc.serializer.impl.JdkSerializer;
 
 import java.io.IOException;
 
@@ -32,7 +34,9 @@ public class UserServiceStaticProxy implements UserService {
         try {
             byte[] body = serializer.serialize(rpcRequest);
             byte[] result;
-            try (HttpResponse httpResponse = HttpRequest.post("http://127.0.0.1:9999/rpc").body(body).execute()) {
+            RpcConfig rpcConfig = RpcApplication.getRpcConfig();
+            String url = "http://" + rpcConfig.getServerHost() + ":" + rpcConfig.getServerPort() + "/rpc";
+            try (HttpResponse httpResponse = HttpRequest.post(url).body(body).execute()) {
                 result = httpResponse.bodyBytes();
             }
             RpcResponse rpcResponse = serializer.deserialize(result, RpcResponse.class);

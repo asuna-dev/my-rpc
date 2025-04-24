@@ -1,0 +1,2 @@
+json=org.zepe.rpc.serializer.impl.JsonSerializer
+kryo=org.zepe.rpc.serializer.impl.KryoSerializer
