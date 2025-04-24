@@ -10,6 +10,9 @@ import java.lang.reflect.Proxy;
  * @description
  */
 public class ServiceProxyFactory {
+    private ServiceProxyFactory() {
+    }
+
     public static <T> T getProxy(Class<T> serviceClass) {
         if (RpcApplication.getRpcConfig().isMock()) {
             return getMockProxy(serviceClass);

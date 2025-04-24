@@ -18,4 +18,6 @@ public class RpcConfig implements Serializable {
     private String version = "0.0.1";
     private String serverHost = "127.0.0.1";
     private Integer serverPort = 9876;
+
+    private RegistryConfig registryConfig = new RegistryConfig();
 }

@@ -4,6 +4,7 @@ import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.io.resource.ResourceUtil;
 import cn.hutool.core.util.StrUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.zepe.rpc.registry.Registry;
 import org.zepe.rpc.serializer.Serializer;
 
 import java.io.BufferedReader;
@@ -31,7 +32,7 @@ public class SpiLoader {
 
     private static final String[] SCAN_DIRS = new String[] {RPC_SYSTEM_SPI_DIR, RPC_CUSTOM_SPI_DIR};
 
-    private static final List<Class<?>> LOAD_CLASS_LIST = ListUtil.toList(Serializer.class);
+    private static final List<Class<?>> LOAD_CLASS_LIST = ListUtil.toList(Serializer.class, Registry.class);
 
     public static void loadAll() {
         for (Class<?> aClass : LOAD_CLASS_LIST) {

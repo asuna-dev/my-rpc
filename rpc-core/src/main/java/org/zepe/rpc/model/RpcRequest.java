@@ -1,6 +1,7 @@
 package org.zepe.rpc.model;
 
 import lombok.*;
+import org.zepe.rpc.constant.RpcConstant;
 
 import java.io.Serializable;
 
@@ -16,6 +17,7 @@ import java.io.Serializable;
 public class RpcRequest implements Serializable {
     private String serviceName;
     private String methodName;
+    private String serviceVersion = RpcConstant.DEFAULT_SERVICE_VERSION;
     private Class<?>[] parameterTypes;
     private Object[] args;
 }

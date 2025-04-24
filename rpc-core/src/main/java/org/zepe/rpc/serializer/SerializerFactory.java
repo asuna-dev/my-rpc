@@ -19,6 +19,9 @@ public class SerializerFactory {
         SpiLoader.load(Serializer.class);
     }
 
+    private SerializerFactory() {
+    }
+
     private static final Serializer DEFAULT_SERIALIZER = new JdkSerializer();
 
     public static Serializer getSerializer(String key) {

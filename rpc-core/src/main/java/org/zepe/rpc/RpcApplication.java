@@ -1,8 +1,11 @@
 package org.zepe.rpc;
 
 import lombok.extern.slf4j.Slf4j;
+import org.zepe.rpc.config.RegistryConfig;
 import org.zepe.rpc.config.RpcConfig;
 import org.zepe.rpc.constant.RpcConstant;
+import org.zepe.rpc.registry.Registry;
+import org.zepe.rpc.registry.RegistryFactory;
 import org.zepe.rpc.utils.ConfigUtils;
 
 /**
@@ -15,8 +18,12 @@ public class RpcApplication {
     private static volatile RpcConfig rpcConfig;
 
     public static void init(RpcConfig newConfig) {
-        rpcConfig = newConfig;
         log.info("rpc init config: {}", newConfig);
+
+        rpcConfig = newConfig;
+        RegistryConfig registryConfig = rpcConfig.getRegistryConfig();
+        Registry registry = RegistryFactory.getInstance(registryConfig.getRegistry());
+        registry.init(registryConfig);
     }
 
     public static void init() {
