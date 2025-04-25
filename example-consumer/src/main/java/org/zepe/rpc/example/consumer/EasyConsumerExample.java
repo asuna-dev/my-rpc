@@ -13,7 +13,7 @@ import org.zepe.rpc.proxy.ServiceProxyFactory;
 @Slf4j
 public class EasyConsumerExample {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
 
         //        UserService userService = new UserServiceStaticProxy();
         UserService userService = ServiceProxyFactory.getProxy(UserService.class);
@@ -22,5 +22,18 @@ public class EasyConsumerExample {
         User user = userService.getUserByName("test");
 
         log.info("User: {}", user);
+
+        Thread thread = new Thread(() -> {
+            while (true) {
+                log.info("heartbeat");
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+        thread.start();
+        thread.join();
     }
 }

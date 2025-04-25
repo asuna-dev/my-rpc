@@ -1,7 +1,6 @@
 package org.zepe.rpc.registry;
 
-import cn.hutool.log.Log;
-import cn.hutool.log.LogFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -11,10 +10,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * @datetime 2025/4/23 19:39
  * @description
  */
+@Slf4j
 public class LocalRegistry {
-    //    private static final ;
-
-    private static final Log log = LogFactory.get();
 
     private static final Map<String, Class<?>> registry = new ConcurrentHashMap<>();
 

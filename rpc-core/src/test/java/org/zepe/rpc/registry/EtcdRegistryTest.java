@@ -67,6 +67,8 @@ public class EtcdRegistryTest {
         for (ServiceMetaInfo metaInfo : serviceMetaInfos) {
             log.info("{}", metaInfo.getServiceNodeKey());
         }
+
+        Thread.sleep(60000);
     }
 
 }

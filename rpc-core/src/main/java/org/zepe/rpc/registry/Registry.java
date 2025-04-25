@@ -3,6 +3,7 @@ package org.zepe.rpc.registry;
 import org.zepe.rpc.config.RegistryConfig;
 import org.zepe.rpc.model.ServiceMetaInfo;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -20,4 +21,8 @@ public interface Registry {
     List<ServiceMetaInfo> serviceDiscovery(String serviceKey);
 
     void destroy();
+
+    void heartbeat(int second);
+
+    void watch(String serviceKey);
 }

@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.security.PrivateKey;
+import java.util.Objects;
 import java.util.PrimitiveIterator;
 
 /**
@@ -21,6 +22,10 @@ public class ServiceMetaInfo {
     private Integer servicePort;
     private String serviceGroup = "default";
 
+    static public String getSvcKeyFromSvcNodeKey(String svcNodeKey) {
+        return StrUtil.subBefore(svcNodeKey, '/', true);
+    }
+
     public String getServiceKey() {
         return StrUtil.format("{}/{}/{}", serviceName, serviceVersion, serviceGroup);
     }
@@ -34,5 +39,20 @@ public class ServiceMetaInfo {
             return StrUtil.format("http://{}:{}/rpc", serviceHost, servicePort);
         }
         return StrUtil.format("{}:{}/rpc", serviceHost, servicePort);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass())
+            return false;
+        ServiceMetaInfo that = (ServiceMetaInfo)o;
+        return Objects.equals(serviceName, that.serviceName) && Objects.equals(serviceVersion,
+            that.serviceVersion) && Objects.equals(serviceHost, that.serviceHost) && Objects.equals(servicePort,
+            that.servicePort) && Objects.equals(serviceGroup, that.serviceGroup);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(serviceName, serviceVersion, serviceHost, servicePort, serviceGroup);
     }
 }
