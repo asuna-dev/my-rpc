@@ -8,6 +8,8 @@ import org.zepe.rpc.config.RpcConfig;
 import org.zepe.rpc.constant.RpcConstant;
 import org.zepe.rpc.fault.retry.RetryStrategy;
 import org.zepe.rpc.fault.retry.RetryStrategyFactory;
+import org.zepe.rpc.fault.tolerant.TolerantStrategy;
+import org.zepe.rpc.fault.tolerant.TolerantStrategyFactory;
 import org.zepe.rpc.loadbalancer.LoadBalancer;
 import org.zepe.rpc.loadbalancer.LoadBalancerFactory;
 import org.zepe.rpc.model.RpcRequest;
@@ -66,8 +68,15 @@ public class ServiceProxy implements InvocationHandler {
 
         RetryStrategy retryStrategy = RetryStrategyFactory.getInstance(rpcConfig.getRetryStrategy());
         final ServiceMetaInfo svc = loadBalancer.select(requestArgs, serviceMetaInfos);
-        RpcResponse rpcResponse = retryStrategy.doRetry(() -> VertxTcpClient.doRequest(rpcRequest, svc));
+        RpcResponse rpcResponse;
+        try {
+            rpcResponse = retryStrategy.doRetry(() -> VertxTcpClient.doRequest(rpcRequest, svc));
+            return rpcResponse.getData();
 
+        } catch (Exception e) {
+            TolerantStrategy tolerantStrategy = TolerantStrategyFactory.getInstance(rpcConfig.getTolerantStrategy());
+            rpcResponse = tolerantStrategy.doTolerant(null, e);
+        }
         return rpcResponse.getData();
     }
 }

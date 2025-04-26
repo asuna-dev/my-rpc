@@ -1,0 +1,2 @@
+failfast=org.zepe.rpc.fault.tolerant.impl.FailFastTolerantStrategy
+failsafe=org.zepe.rpc.fault.tolerant.impl.FailSafeTolerantStrategy

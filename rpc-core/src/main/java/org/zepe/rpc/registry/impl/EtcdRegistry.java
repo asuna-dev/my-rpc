@@ -144,7 +144,7 @@ public class EtcdRegistry implements Registry {
     public void destroy() {
         log.info("registry node offline");
 
-        //        serviceCache.clearAll();
+        serviceCache.clearAll();
         for (ServiceMetaInfo svc : localRpcServices.values()) {
             try {
                 unregister(svc);

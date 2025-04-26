@@ -103,4 +103,17 @@ public class SpiLoader {
         return (T)object;
     }
 
+    public static <T> T getInstanceOrDefault(Class<?> clazz, String key, T defaultObj) {
+        try {
+            Object instance = getInstance(clazz, key);
+            if (instance == null) {
+                return defaultObj;
+            }
+            return (T)instance;
+        } catch (Exception e) {
+            log.error("getInstance error", e);
+            return defaultObj;
+        }
+    }
+
 }
