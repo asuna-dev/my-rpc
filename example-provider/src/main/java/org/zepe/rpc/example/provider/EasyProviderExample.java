@@ -2,11 +2,11 @@ package org.zepe.rpc.example.provider;
 
 import org.zepe.rpc.RpcApplication;
 import org.zepe.rpc.config.RpcConfig;
+import org.zepe.rpc.example.common.service.ComputeService;
 import org.zepe.rpc.example.common.service.UserService;
 import org.zepe.rpc.model.ServiceMetaInfo;
 import org.zepe.rpc.registry.*;
 import org.zepe.rpc.server.HttpServer;
-import org.zepe.rpc.server.VertxHttpServer;
 import org.zepe.rpc.server.tcp.VertxTcpServer;
 
 /**
@@ -20,14 +20,23 @@ public class EasyProviderExample {
 
         RpcConfig rpcConfig = RpcApplication.getRpcConfig();
 
-        ServiceMetaInfo serviceMetaInfo = new ServiceMetaInfo();
-        serviceMetaInfo.setServiceHost(rpcConfig.getServerHost());
-        serviceMetaInfo.setServicePort(rpcConfig.getServerPort());
-        serviceMetaInfo.setServiceName(UserService.class.getName());
+        ServiceMetaInfo userServiceInfo = new ServiceMetaInfo();
+        userServiceInfo.setServiceHost(rpcConfig.getServerHost());
+        userServiceInfo.setServicePort(rpcConfig.getServerPort());
+        userServiceInfo.setServiceName(UserService.class.getName());
 
-        registry.register(serviceMetaInfo);
+        registry.register(userServiceInfo);
+
+        ServiceMetaInfo computeServiceInfo = new ServiceMetaInfo();
+        computeServiceInfo.setServiceHost(rpcConfig.getServerHost());
+        computeServiceInfo.setServicePort(rpcConfig.getServerPort());
+        computeServiceInfo.setServiceName(ComputeService.class.getName());
+
+        registry.register(computeServiceInfo);
 
         LocalRegistry.register(UserService.class.getName(), UserServiceImpl.class);
+
+        LocalRegistry.register(ComputeService.class.getName(), ComputeServiceImpl.class);
 
         HttpServer httpServer = new VertxTcpServer();
         httpServer.doStart(rpcConfig.getServerPort());

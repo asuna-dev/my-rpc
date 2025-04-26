@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.zepe.rpc.RpcApplication;
 import org.zepe.rpc.model.RpcRequest;
 import org.zepe.rpc.model.RpcResponse;
+import org.zepe.rpc.model.RpcStatusCode;
 import org.zepe.rpc.registry.LocalRegistry;
 import org.zepe.rpc.serializer.Serializer;
 import org.zepe.rpc.serializer.SerializerFactory;
@@ -37,36 +38,32 @@ public class HttpServerHandler implements Handler<HttpServerRequest> {
         request.bodyHandler(body -> {
             byte[] bytes = body.getBytes();
             RpcRequest rpcRequest = null;
-            RpcResponse rpcResponse = new RpcResponse();
+            RpcResponse rpcResponse;
 
             try {
                 rpcRequest = serializer.deserialize(bytes, RpcRequest.class);
             } catch (IOException e) {
                 log.error("deserialize error", e);
-                rpcResponse.setException(e);
-                rpcResponse.setMessage("deserialize body to RpcRequest failed");
+                rpcResponse = RpcResponse.failure(RpcStatusCode.BAD_REQUEST, e, "deserialize RpcRequest error");
                 doResponse(request, rpcResponse, serializer);
                 return;
             }
 
             if (rpcRequest == null) {
-                rpcResponse.setMessage("RpcRequest is null");
-                doResponse(request, rpcResponse, serializer);
-                return;
+                rpcResponse = RpcResponse.failure(RpcStatusCode.BAD_REQUEST, "RpcRequest is null");
+
+            } else {
+                Class<?> svcClass = LocalRegistry.getService(rpcRequest.getServiceName());
+                try {
+                    Method method = svcClass.getMethod(rpcRequest.getMethodName(), rpcRequest.getParameterTypes());
+                    Object result =
+                        method.invoke(svcClass.getDeclaredConstructor().newInstance(), rpcRequest.getArgs());
+                    rpcResponse = RpcResponse.success(result, method.getReturnType());
+                } catch (Exception e) {
+                    rpcResponse = RpcResponse.failure(RpcStatusCode.INTERNAL_SERVER_ERROR, e);
+                }
             }
 
-            Class<?> svcClass = LocalRegistry.getService(rpcRequest.getServiceName());
-            try {
-                Method method = svcClass.getMethod(rpcRequest.getMethodName(), rpcRequest.getParameterTypes());
-                Object result = method.invoke(svcClass.getDeclaredConstructor().newInstance(), rpcRequest.getArgs());
-                rpcResponse.setData(result);
-                rpcResponse.setDataType(method.getReturnType());
-                rpcResponse.setMessage("ok");
-            } catch (Exception e) {
-                log.error("invoke service error", e);
-                rpcResponse.setMessage(e.getMessage());
-                rpcResponse.setException(e);
-            }
             doResponse(request, rpcResponse, serializer);
         });
 

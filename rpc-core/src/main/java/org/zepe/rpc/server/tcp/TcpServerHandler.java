@@ -6,6 +6,7 @@ import io.vertx.core.net.NetSocket;
 import lombok.extern.slf4j.Slf4j;
 import org.zepe.rpc.model.RpcRequest;
 import org.zepe.rpc.model.RpcResponse;
+import org.zepe.rpc.model.RpcStatusCode;
 import org.zepe.rpc.protocol.ProtocolMessage;
 import org.zepe.rpc.protocol.ProtocolMessageDecoder;
 import org.zepe.rpc.protocol.ProtocolMessageEncoder;
@@ -23,23 +24,19 @@ import java.lang.reflect.Method;
 public class TcpServerHandler implements Handler<NetSocket> {
 
     private RpcResponse handleRpcRequest(RpcRequest request) {
-        RpcResponse response = new RpcResponse();
+        RpcResponse response;
 
         try {
             Class<?> service = LocalRegistry.getService(request.getServiceName());
             Method method = service.getMethod(request.getMethodName(), request.getParameterTypes());
             Object result = method.invoke(service.getDeclaredConstructor().newInstance(), request.getArgs());
-            response.setData(result);
-            response.setDataType(method.getReturnType());
-            response.setMessage("ok");
+            response = RpcResponse.success(result, method.getReturnType());
+
         } catch (Exception e) {
-            log.error("invoke service error: {}", request.getServiceName(), e);
-            response.setMessage(e.getMessage());
-            response.setException(e);
+            response = RpcResponse.failure(RpcStatusCode.INTERNAL_SERVER_ERROR, e);
         }
 
         return response;
-
     }
 
     @Override

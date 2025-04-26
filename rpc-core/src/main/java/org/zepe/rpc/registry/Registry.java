@@ -3,7 +3,6 @@ package org.zepe.rpc.registry;
 import org.zepe.rpc.config.RegistryConfig;
 import org.zepe.rpc.model.ServiceMetaInfo;
 
-import java.util.Collection;
 import java.util.List;
 
 /**

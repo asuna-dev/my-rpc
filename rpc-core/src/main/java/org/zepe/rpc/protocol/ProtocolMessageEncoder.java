@@ -1,13 +1,8 @@
 package org.zepe.rpc.protocol;
 
 import io.vertx.core.buffer.Buffer;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.zepe.rpc.serializer.Serializer;
 import org.zepe.rpc.serializer.SerializerFactory;
-
-import java.io.IOException;
 
 /**
  * @author zzpus

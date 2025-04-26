@@ -1,7 +1,6 @@
 package org.zepe.rpc.server.tcp;
 
 import io.vertx.core.Vertx;
-import io.vertx.core.buffer.Buffer;
 import io.vertx.core.net.NetServer;
 import lombok.extern.slf4j.Slf4j;
 import org.zepe.rpc.server.HttpServer;

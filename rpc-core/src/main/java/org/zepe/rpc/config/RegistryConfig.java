@@ -3,7 +3,6 @@ package org.zepe.rpc.config;
 import cn.hutool.core.util.StrUtil;
 import lombok.Data;
 import org.zepe.rpc.registry.RegistryKeys;
-import org.zepe.rpc.serializer.SerializerKeys;
 
 import java.io.Serializable;
 

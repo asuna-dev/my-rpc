@@ -18,7 +18,9 @@ import org.zepe.rpc.model.ServiceMetaInfo;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -34,7 +36,7 @@ public class EtcdRegistry implements Registry {
     Watch watchClient;
 
     // 提供者: 本地注册的服务缓存，定时续期
-    private final Set<ServiceMetaInfo> localRpcServices = new ConcurrentHashSet<>();
+    private final Map<String, ServiceMetaInfo> localRpcServices = new ConcurrentHashMap<>();
 
     // 消费者: 服务提供者的本地列表缓存
     private final RegistryServiceCache serviceCache = new RegistryServiceCache();
@@ -75,8 +77,10 @@ public class EtcdRegistry implements Registry {
     public void init(RegistryConfig registryConfig) {
         log.info("etcd registry init: {}", registryConfig);
 
-        client = Client.builder().endpoints(registryConfig.getAddress())
-            .connectTimeout(Duration.ofMillis(registryConfig.getTimeout())).build();
+        client = Client.builder()
+            .endpoints(registryConfig.getAddress())
+            .connectTimeout(Duration.ofMillis(registryConfig.getTimeout()))
+            .build();
         kvClient = client.getKVClient();
         leaseClient = client.getLeaseClient();
         watchClient = client.getWatchClient();
@@ -86,13 +90,13 @@ public class EtcdRegistry implements Registry {
 
     @Override
     public void register(ServiceMetaInfo serviceMetaInfo) throws Exception {
-        localRpcServices.add(serviceMetaInfo);
+        localRpcServices.put(serviceMetaInfo.getServiceNodeKey(), serviceMetaInfo);
         registerToEtcd(serviceMetaInfo.getServiceNodeKey(), JSONUtil.toJsonStr(serviceMetaInfo), 30);
     }
 
     @Override
     public void unregister(ServiceMetaInfo serviceMetaInfo) throws Exception {
-        localRpcServices.remove(serviceMetaInfo);
+        localRpcServices.remove(serviceMetaInfo.getServiceNodeKey());
         unregister(serviceMetaInfo.getServiceNodeKey());
     }
 
@@ -139,7 +143,7 @@ public class EtcdRegistry implements Registry {
         log.info("registry node offline");
 
         //        serviceCache.clearAll();
-        for (ServiceMetaInfo svc : localRpcServices) {
+        for (ServiceMetaInfo svc : localRpcServices.values()) {
             try {
                 unregister(svc);
             } catch (Exception e) {
@@ -156,11 +160,11 @@ public class EtcdRegistry implements Registry {
     public void heartbeat(int second) {
         String pattern = StrUtil.format("*/{} * * * * *", second);
         CronUtil.schedule(pattern, (Task)() -> {
-            for (ServiceMetaInfo svc : localRpcServices) {
+            for (ServiceMetaInfo svc : localRpcServices.values()) {
                 try {
                     register(svc);
                 } catch (Exception e) {
-                    log.warn("service keep error", e);
+                    log.warn("service keep error,{}", svc.getServiceNodeKey(), e);
                 }
             }
         });

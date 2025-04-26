@@ -3,7 +3,6 @@ package org.zepe.rpc.protocol;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.zepe.rpc.serializer.SerializerKeys;
 
 /**
  * @author zzpus
