@@ -1,6 +1,7 @@
 package org.zepe.rpc.example.consumer;
 
 import lombok.extern.slf4j.Slf4j;
+import org.zepe.rpc.bootstrap.ConsumerBootstrap;
 import org.zepe.rpc.example.common.service.ComputeService;
 import org.zepe.rpc.example.common.service.UserService;
 import org.zepe.rpc.proxy.ServiceProxyFactory;
@@ -14,6 +15,8 @@ import org.zepe.rpc.proxy.ServiceProxyFactory;
 public class EasyConsumerExample {
 
     public static void main(String[] args) throws InterruptedException {
+
+        ConsumerBootstrap.init();
 
         UserService userService = ServiceProxyFactory.getProxy(UserService.class);
 

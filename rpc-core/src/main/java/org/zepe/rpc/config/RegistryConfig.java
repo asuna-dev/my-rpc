@@ -9,14 +9,16 @@ import java.io.Serializable;
 /**
  * @author zzpus
  * @datetime 2025/4/24 00:14
- * @description
+ * @description 注册中心配置
  */
 @Data
 public class RegistryConfig implements Serializable {
 
     private String registry = RegistryKeys.ETCD;
+
     private String host = "localhost";
     private Integer port = 2379;
+
     private String userName;
     private String password;
     // 超时时间/ms

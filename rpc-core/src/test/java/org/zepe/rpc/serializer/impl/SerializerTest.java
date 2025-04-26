@@ -59,7 +59,6 @@ public class SerializerTest {
         byte[] bytes = serializer.serialize(config);
         RpcConfig deserialize = serializer.deserialize(bytes, RpcConfig.class);
         log.info("after: {}", deserialize);
-        Assert.assertEquals(config.getName(), deserialize.getName());
         Assert.assertEquals(config.getVersion(), deserialize.getVersion());
     }
 

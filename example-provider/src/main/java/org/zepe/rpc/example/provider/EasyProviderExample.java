@@ -1,13 +1,20 @@
 package org.zepe.rpc.example.provider;
 
+import cn.hutool.core.collection.CollUtil;
 import org.zepe.rpc.RpcApplication;
+import org.zepe.rpc.bootstrap.ProviderBootstrap;
 import org.zepe.rpc.config.RpcConfig;
+import org.zepe.rpc.constant.RpcConstant;
 import org.zepe.rpc.example.common.service.ComputeService;
 import org.zepe.rpc.example.common.service.UserService;
+import org.zepe.rpc.model.ServiceLocalRegisterInfo;
 import org.zepe.rpc.model.ServiceMetaInfo;
 import org.zepe.rpc.registry.*;
 import org.zepe.rpc.server.HttpServer;
 import org.zepe.rpc.server.tcp.VertxTcpServer;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author zzpus
@@ -16,30 +23,16 @@ import org.zepe.rpc.server.tcp.VertxTcpServer;
  */
 public class EasyProviderExample {
     public static void main(String[] args) throws Exception {
-        Registry registry = RegistryFactory.getInstance(RegistryKeys.ETCD);
+        List<ServiceLocalRegisterInfo<?>> svcs = new ArrayList<>();
+        svcs.add(new ServiceLocalRegisterInfo<>(UserService.class.getName(), UserServiceImpl.class,
+            RpcConstant.DEFAULT_SERVICE_VERSION));
+        svcs.add(new ServiceLocalRegisterInfo<>(ComputeService.class.getName(), ComputeServiceImpl.class,
+            RpcConstant.DEFAULT_SERVICE_VERSION));
 
-        RpcConfig rpcConfig = RpcApplication.getRpcConfig();
-
-        ServiceMetaInfo userServiceInfo = new ServiceMetaInfo();
-        userServiceInfo.setServiceHost(rpcConfig.getServerHost());
-        userServiceInfo.setServicePort(rpcConfig.getServerPort());
-        userServiceInfo.setServiceName(UserService.class.getName());
-
-        registry.register(userServiceInfo);
-
-        ServiceMetaInfo computeServiceInfo = new ServiceMetaInfo();
-        computeServiceInfo.setServiceHost(rpcConfig.getServerHost());
-        computeServiceInfo.setServicePort(rpcConfig.getServerPort());
-        computeServiceInfo.setServiceName(ComputeService.class.getName());
-
-        registry.register(computeServiceInfo);
-
-        LocalRegistry.register(UserService.class.getName(), UserServiceImpl.class);
-
-        LocalRegistry.register(ComputeService.class.getName(), ComputeServiceImpl.class);
+        ProviderBootstrap.init(svcs);
 
         HttpServer httpServer = new VertxTcpServer();
-        httpServer.doStart(rpcConfig.getServerPort());
+        httpServer.doStart(RpcApplication.getRpcConfig().getServerPort());
 
     }
 }

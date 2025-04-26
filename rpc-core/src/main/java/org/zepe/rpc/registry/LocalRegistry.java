@@ -8,7 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * @author zzpus
  * @datetime 2025/4/23 19:39
- * @description
+ * @description 服务提供者存储服务的本地具体实现类
  */
 @Slf4j
 public class LocalRegistry {
