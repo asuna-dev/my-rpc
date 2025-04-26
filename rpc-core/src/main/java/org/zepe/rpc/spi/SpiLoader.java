@@ -4,6 +4,7 @@ import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.io.resource.ResourceUtil;
 import cn.hutool.core.util.StrUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.zepe.rpc.loadbalancer.LoadBalancer;
 import org.zepe.rpc.registry.Registry;
 import org.zepe.rpc.serializer.Serializer;
 
@@ -32,7 +33,8 @@ public class SpiLoader {
 
     private static final String[] SCAN_DIRS = new String[] {RPC_SYSTEM_SPI_DIR, RPC_CUSTOM_SPI_DIR};
 
-    private static final List<Class<?>> LOAD_CLASS_LIST = ListUtil.toList(Serializer.class, Registry.class);
+    private static final List<Class<?>> LOAD_CLASS_LIST =
+        ListUtil.toList(Serializer.class, Registry.class, LoadBalancer.class);
 
     public static void loadAll() {
         for (Class<?> aClass : LOAD_CLASS_LIST) {
@@ -55,7 +57,7 @@ public class SpiLoader {
                     while ((line = bufferedReader.readLine()) != null) {
                         String[] strings = line.split("=");
                         if (strings.length > 1) {
-                            String key = strings[0];
+                            String key = strings[0].toLowerCase();
                             String className = strings[1];
                             classMap.put(key, Class.forName(className));
                             log.info("spi loaded: {}: {}", key, className);
@@ -74,6 +76,7 @@ public class SpiLoader {
     }
 
     public static <T> T getInstance(Class<?> clazz, String key) {
+        key = key.toLowerCase();
         String clazzName = clazz.getName();
         Map<String, Class<?>> classMap = loaderMap.get(clazzName);
         if (classMap == null) {

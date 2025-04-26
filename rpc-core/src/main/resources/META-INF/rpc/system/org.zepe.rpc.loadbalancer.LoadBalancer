@@ -1,0 +1,2 @@
+roundrobin=org.zepe.rpc.loadbalancer.impl.RoundRobinLoadBalancer
+random=org.zepe.rpc.loadbalancer.impl.RandomLoadBalancer

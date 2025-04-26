@@ -1,7 +1,8 @@
-package org.zepe.rpc.server;
+package org.zepe.rpc.server.http;
 
 import io.vertx.core.Vertx;
 import lombok.extern.slf4j.Slf4j;
+import org.zepe.rpc.server.HttpServer;
 
 /**
  * @author zzpus

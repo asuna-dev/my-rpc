@@ -12,9 +12,6 @@ import org.zepe.rpc.server.HttpServer;
  */
 @Slf4j
 public class VertxTcpServer implements HttpServer {
-    private byte[] handleRequest(byte[] requestBytes) {
-        return "hi".getBytes();
-    }
 
     @Override
     public void doStart(int port) {
@@ -30,10 +27,6 @@ public class VertxTcpServer implements HttpServer {
                 log.error("VertxTcpServer start failed", result.cause());
             }
         });
-    }
-
-    public static void main(String[] args) {
-        new VertxTcpServer().doStart(9898);
     }
 
 }

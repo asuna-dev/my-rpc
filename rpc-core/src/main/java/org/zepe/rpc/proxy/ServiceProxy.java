@@ -6,6 +6,8 @@ import org.zepe.rpc.RpcApplication;
 import org.zepe.rpc.config.RegistryConfig;
 import org.zepe.rpc.config.RpcConfig;
 import org.zepe.rpc.constant.RpcConstant;
+import org.zepe.rpc.loadbalancer.LoadBalancer;
+import org.zepe.rpc.loadbalancer.LoadBalancerFactory;
 import org.zepe.rpc.model.RpcRequest;
 import org.zepe.rpc.model.RpcResponse;
 import org.zepe.rpc.model.ServiceMetaInfo;
@@ -17,7 +19,9 @@ import org.zepe.rpc.server.tcp.VertxTcpClient;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author zzpus
@@ -32,7 +36,7 @@ public class ServiceProxy implements InvocationHandler {
         log.info("invoke: {}", method);
         RpcConfig rpcConfig = RpcApplication.getRpcConfig();
 
-        final Serializer serializer = SerializerFactory.getSerializer(rpcConfig.getSerializer());
+        // final Serializer serializer = SerializerFactory.getSerializer(rpcConfig.getSerializer());
 
         String serviceName = method.getDeclaringClass().getName();
         RpcRequest rpcRequest = RpcRequest.builder()
@@ -54,8 +58,10 @@ public class ServiceProxy implements InvocationHandler {
             throw new RuntimeException("service unavailable: " + serviceName);
         }
 
-        // todo
-        serviceMetaInfo = serviceMetaInfos.get(0);
+        final LoadBalancer loadBalancer = LoadBalancerFactory.getInstance(rpcConfig.getLoadBalancer());
+        Map<String, Object> requestArgs = new HashMap<>();
+        requestArgs.put("methodName", rpcRequest.getMethodName());
+        serviceMetaInfo = loadBalancer.select(requestArgs, serviceMetaInfos);
 
         RpcResponse rpcResponse = VertxTcpClient.doRequest(rpcRequest, serviceMetaInfo);
 

@@ -6,14 +6,11 @@ import io.vertx.core.net.NetSocket;
 import lombok.extern.slf4j.Slf4j;
 import org.zepe.rpc.model.RpcRequest;
 import org.zepe.rpc.model.RpcResponse;
-import org.zepe.rpc.model.RpcStatusCode;
 import org.zepe.rpc.protocol.ProtocolMessage;
 import org.zepe.rpc.protocol.ProtocolMessageDecoder;
 import org.zepe.rpc.protocol.ProtocolMessageEncoder;
 import org.zepe.rpc.protocol.ProtocolMessageTypeEnum;
-import org.zepe.rpc.registry.LocalRegistry;
-
-import java.lang.reflect.Method;
+import org.zepe.rpc.server.RpcRequestHandler;
 
 /**
  * @author zzpus
@@ -22,22 +19,6 @@ import java.lang.reflect.Method;
  */
 @Slf4j
 public class TcpServerHandler implements Handler<NetSocket> {
-
-    private RpcResponse handleRpcRequest(RpcRequest request) {
-        RpcResponse response;
-
-        try {
-            Class<?> service = LocalRegistry.getService(request.getServiceName());
-            Method method = service.getMethod(request.getMethodName(), request.getParameterTypes());
-            Object result = method.invoke(service.getDeclaredConstructor().newInstance(), request.getArgs());
-            response = RpcResponse.success(result, method.getReturnType());
-
-        } catch (Exception e) {
-            response = RpcResponse.failure(RpcStatusCode.INTERNAL_SERVER_ERROR, e);
-        }
-
-        return response;
-    }
 
     @Override
     public void handle(NetSocket netSocket) {
@@ -54,7 +35,7 @@ public class TcpServerHandler implements Handler<NetSocket> {
             }
 
             RpcRequest request = message.getBody();
-            RpcResponse response = handleRpcRequest(request);
+            RpcResponse response = RpcRequestHandler.handleRpcRequest(request);
 
             ProtocolMessage.Header header = message.getHeader();
             header.setType((byte)ProtocolMessageTypeEnum.RESPONSE.getKey());

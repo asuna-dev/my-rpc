@@ -1,5 +1,6 @@
 package org.zepe.rpc.registry;
 
+import org.zepe.rpc.registry.impl.EtcdRegistry;
 import org.zepe.rpc.spi.SpiLoader;
 
 /**

@@ -1,0 +1,1 @@
+consistentHash=org.zepe.rpc.loadbalancer.impl.ConsistentHashLoadBalancer

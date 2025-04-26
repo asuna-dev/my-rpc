@@ -4,15 +4,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.zepe.rpc.RpcApplication;
 import org.zepe.rpc.config.RegistryConfig;
 import org.zepe.rpc.model.ServiceMetaInfo;
+import org.zepe.rpc.registry.impl.EtcdRegistry;
 
 import java.util.List;
-
-import static org.junit.Assert.*;
 
 /**
  * @author zzpus

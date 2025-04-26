@@ -1,4 +1,4 @@
-package org.zepe.rpc.server;
+package org.zepe.rpc.server.http;
 
 import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
@@ -12,6 +12,7 @@ import org.zepe.rpc.model.RpcStatusCode;
 import org.zepe.rpc.registry.LocalRegistry;
 import org.zepe.rpc.serializer.Serializer;
 import org.zepe.rpc.serializer.SerializerFactory;
+import org.zepe.rpc.server.RpcRequestHandler;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -53,15 +54,7 @@ public class HttpServerHandler implements Handler<HttpServerRequest> {
                 rpcResponse = RpcResponse.failure(RpcStatusCode.BAD_REQUEST, "RpcRequest is null");
 
             } else {
-                Class<?> svcClass = LocalRegistry.getService(rpcRequest.getServiceName());
-                try {
-                    Method method = svcClass.getMethod(rpcRequest.getMethodName(), rpcRequest.getParameterTypes());
-                    Object result =
-                        method.invoke(svcClass.getDeclaredConstructor().newInstance(), rpcRequest.getArgs());
-                    rpcResponse = RpcResponse.success(result, method.getReturnType());
-                } catch (Exception e) {
-                    rpcResponse = RpcResponse.failure(RpcStatusCode.INTERNAL_SERVER_ERROR, e);
-                }
+                rpcResponse = RpcRequestHandler.handleRpcRequest(rpcRequest);
             }
 
             doResponse(request, rpcResponse, serializer);

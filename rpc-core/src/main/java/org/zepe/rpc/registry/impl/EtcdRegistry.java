@@ -1,4 +1,4 @@
-package org.zepe.rpc.registry;
+package org.zepe.rpc.registry.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.ConcurrentHashSet;
@@ -14,6 +14,8 @@ import io.etcd.jetcd.watch.WatchEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.zepe.rpc.config.RegistryConfig;
 import org.zepe.rpc.model.ServiceMetaInfo;
+import org.zepe.rpc.registry.Registry;
+import org.zepe.rpc.registry.RegistryServiceCache;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
