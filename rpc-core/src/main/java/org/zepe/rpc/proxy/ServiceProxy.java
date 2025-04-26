@@ -6,6 +6,8 @@ import org.zepe.rpc.RpcApplication;
 import org.zepe.rpc.config.RegistryConfig;
 import org.zepe.rpc.config.RpcConfig;
 import org.zepe.rpc.constant.RpcConstant;
+import org.zepe.rpc.fault.retry.RetryStrategy;
+import org.zepe.rpc.fault.retry.RetryStrategyFactory;
 import org.zepe.rpc.loadbalancer.LoadBalancer;
 import org.zepe.rpc.loadbalancer.LoadBalancerFactory;
 import org.zepe.rpc.model.RpcRequest;
@@ -61,9 +63,10 @@ public class ServiceProxy implements InvocationHandler {
         final LoadBalancer loadBalancer = LoadBalancerFactory.getInstance(rpcConfig.getLoadBalancer());
         Map<String, Object> requestArgs = new HashMap<>();
         requestArgs.put("methodName", rpcRequest.getMethodName());
-        serviceMetaInfo = loadBalancer.select(requestArgs, serviceMetaInfos);
 
-        RpcResponse rpcResponse = VertxTcpClient.doRequest(rpcRequest, serviceMetaInfo);
+        RetryStrategy retryStrategy = RetryStrategyFactory.getInstance(rpcConfig.getRetryStrategy());
+        final ServiceMetaInfo svc = loadBalancer.select(requestArgs, serviceMetaInfos);
+        RpcResponse rpcResponse = retryStrategy.doRetry(() -> VertxTcpClient.doRequest(rpcRequest, svc));
 
         return rpcResponse.getData();
     }

@@ -1,0 +1,2 @@
+no=org.zepe.rpc.fault.retry.impl.FixedIntervalRetryStrategy
+fixedInterval=org.zepe.rpc.fault.retry.impl.NoRetryStrategy

@@ -28,48 +28,40 @@ public class VertxTcpClient {
         CompletableFuture<RpcResponse> responseFuture = new CompletableFuture<>();
 
         client.connect(serviceMetaInfo.getServicePort(), serviceMetaInfo.getServiceHost(), result -> {
-            int retry = 0;
-            while (retry < 3) {
-                if (result.succeeded()) {
-                    NetSocket socket = result.result();
-                    ProtocolMessage<RpcRequest> request = new ProtocolMessage<>();
-                    ProtocolMessage.Header header = new ProtocolMessage.Header();
-                    header.setMagic(ProtocolConstant.PROTOCOL_MAGIC);
-                    header.setVersion(ProtocolConstant.PROTOCOL_VERSION);
-                    header.setSerializer(
-                        (byte)ProtocolMessageSerializerEnum.getEnumByKey(RpcApplication.getRpcConfig().getSerializer())
-                            .getValue());
-                    header.setType((byte)ProtocolMessageTypeEnum.REQUEST.getKey());
-                    header.setRequestId(IdUtil.getSnowflakeNextId());
-                    request.setHeader(header);
-                    request.setBody(rpcRequest);
 
+            if (result.succeeded()) {
+                NetSocket socket = result.result();
+                ProtocolMessage<RpcRequest> request = new ProtocolMessage<>();
+                ProtocolMessage.Header header = new ProtocolMessage.Header();
+                header.setMagic(ProtocolConstant.PROTOCOL_MAGIC);
+                header.setVersion(ProtocolConstant.PROTOCOL_VERSION);
+                header.setSerializer(
+                    (byte)ProtocolMessageSerializerEnum.getEnumByKey(RpcApplication.getRpcConfig().getSerializer())
+                        .getValue());
+                header.setType((byte)ProtocolMessageTypeEnum.REQUEST.getKey());
+                header.setRequestId(IdUtil.getSnowflakeNextId());
+                request.setHeader(header);
+                request.setBody(rpcRequest);
+
+                try {
+                    Buffer encode = ProtocolMessageEncoder.encode(request);
+                    socket.write(encode);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+
+                socket.handler(buffer -> {
                     try {
-                        Buffer encode = ProtocolMessageEncoder.encode(request);
-                        socket.write(encode);
+                        ProtocolMessage<RpcResponse> response =
+                            (ProtocolMessage<RpcResponse>)ProtocolMessageDecoder.decode(buffer);
+                        responseFuture.complete(response.getBody());
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
+                });
 
-                    socket.handler(buffer -> {
-                        try {
-                            ProtocolMessage<RpcResponse> response =
-                                (ProtocolMessage<RpcResponse>)ProtocolMessageDecoder.decode(buffer);
-                            responseFuture.complete(response.getBody());
-                        } catch (Exception e) {
-                            throw new RuntimeException(e);
-                        }
-                    });
-                    return;
-                } else {
-                    retry++;
-                    log.error("connect server error,retry count: {}", retry, result.cause());
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
+            } else {
+                responseFuture.completeExceptionally(new RuntimeException("server error", result.cause()));
             }
 
         });

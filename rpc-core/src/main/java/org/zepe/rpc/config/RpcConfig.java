@@ -1,6 +1,7 @@
 package org.zepe.rpc.config;
 
 import lombok.Data;
+import org.zepe.rpc.fault.retry.RetryStrategyKeys;
 import org.zepe.rpc.loadbalancer.LoadBalancerKeys;
 import org.zepe.rpc.serializer.SerializerKeys;
 
@@ -20,6 +21,7 @@ public class RpcConfig implements Serializable {
     private String serverHost = "127.0.0.1";
     private Integer serverPort = 9876;
     private String loadBalancer = LoadBalancerKeys.ROUND_ROBIN;
+    private String retryStrategy = RetryStrategyKeys.FIXED_INTERVAL;
 
     private RegistryConfig registryConfig = new RegistryConfig();
 }
