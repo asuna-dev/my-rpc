@@ -3,6 +3,7 @@ package org.zepe.rpc.protocol;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.zepe.rpc.serializer.SerializerKeys;
 
 /**
  * @author zzpus
@@ -18,8 +19,10 @@ public class ProtocolMessage<T> {
 
     @Data
     public static class Header {
-        private byte magic;
-        private byte version;
+        private byte magic = ProtocolConstant.PROTOCOL_MAGIC;
+        private byte version = ProtocolConstant.PROTOCOL_VERSION;
+        private byte serializer = (byte)ProtocolMessageSerializerEnum.JDK.getValue();
+        private byte type;
         private byte status;
         private long requestId;
         private int bodyLength;

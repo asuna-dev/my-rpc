@@ -33,12 +33,12 @@ public class EtcdRegistry implements Registry {
     Lease leaseClient;
     Watch watchClient;
 
-    //提供者: 本地注册的服务缓存，定时续期
+    // 提供者: 本地注册的服务缓存，定时续期
     private final Set<ServiceMetaInfo> localRpcServices = new ConcurrentHashSet<>();
 
-    //消费者: 服务提供者的本地列表缓存
+    // 消费者: 服务提供者的本地列表缓存
     private final RegistryServiceCache serviceCache = new RegistryServiceCache();
-    //消费者: watch机制监听服务注册时间，维护本地缓存
+    // 消费者: watch机制监听服务注册时间，维护本地缓存
     private final Set<String> watchingKeys = new ConcurrentHashSet<>();
 
     private static final String ETCD_ROOT_PATH = "/rpc/";
@@ -80,7 +80,7 @@ public class EtcdRegistry implements Registry {
         kvClient = client.getKVClient();
         leaseClient = client.getLeaseClient();
         watchClient = client.getWatchClient();
-        //定期续约本地服务
+        // 定期续约本地服务
         heartbeat(10);
     }
 
@@ -104,7 +104,7 @@ public class EtcdRegistry implements Registry {
         }
 
         try {
-            //前缀查找
+            // 前缀查找
             String searchPrefix = ETCD_ROOT_PATH + serviceKey + "/";
             GetOption getOption = GetOption.builder().isPrefix(true).build();
 
@@ -123,7 +123,7 @@ public class EtcdRegistry implements Registry {
                 return serviceMetaInfo;
             }).toList();
 
-            //进行前缀监听，维护消费者本地服务缓存列表
+            // 进行前缀监听，维护消费者本地服务缓存列表
             watch(serviceKey);
 
             log.info("service discovery: {} {}", serviceKey, serviceMetaInfos.size());
@@ -187,7 +187,7 @@ public class EtcdRegistry implements Registry {
                         ServiceMetaInfo serviceMetaInfo;
                         switch (event.getEventType()) {
                             case PUT:
-                                //更新缓存
+                                // 更新缓存
                                 serviceMetaInfo =
                                     JSONUtil.toBean(event.getKeyValue().getValue().toString(StandardCharsets.UTF_8),
                                         ServiceMetaInfo.class);
@@ -195,7 +195,7 @@ public class EtcdRegistry implements Registry {
                                 log.info("service cache update: {}", serviceMetaInfo.getServiceNodeKey());
                                 break;
                             case DELETE:
-                                //删除缓存
+                                // 删除缓存
                                 String etcdKey = event.getKeyValue().getKey().toString(StandardCharsets.UTF_8);
                                 String svcNodeKey = StrUtil.replace(etcdKey, ETCD_ROOT_PATH, "");
                                 serviceCache.remove(svcNodeKey);

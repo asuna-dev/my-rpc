@@ -27,7 +27,7 @@ public class EtcdRegistryTest {
     public void init() {
         RegistryConfig registryConfig = new RegistryConfig();
         registryConfig.setRegistry(RegistryKeys.ETCD);
-        registryConfig.setAddress("http://127.0.0.1:2379");
+        // registryConfig.setAddress("http://127.0.0.1:2379");
         registry.init(registryConfig);
     }
 

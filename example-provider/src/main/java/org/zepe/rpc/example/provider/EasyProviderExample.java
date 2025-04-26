@@ -7,6 +7,7 @@ import org.zepe.rpc.model.ServiceMetaInfo;
 import org.zepe.rpc.registry.*;
 import org.zepe.rpc.server.HttpServer;
 import org.zepe.rpc.server.VertxHttpServer;
+import org.zepe.rpc.server.tcp.VertxTcpServer;
 
 /**
  * @author zzpus
@@ -28,7 +29,7 @@ public class EasyProviderExample {
 
         LocalRegistry.register(UserService.class.getName(), UserServiceImpl.class);
 
-        HttpServer httpServer = new VertxHttpServer();
+        HttpServer httpServer = new VertxTcpServer();
         httpServer.doStart(rpcConfig.getServerPort());
 
     }

@@ -28,7 +28,7 @@ public class KryoSerializer implements Serializer {
     public <T> byte[] serialize(T object) throws IOException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         Output output = new Output(byteArrayOutputStream);
-        KRYO_THREAD_LOCAL.get().writeObject(output, object);
+        KRYO_THREAD_LOCAL.get().writeClassAndObject(output, object);
         output.close();
         return byteArrayOutputStream.toByteArray();
     }
@@ -37,7 +37,7 @@ public class KryoSerializer implements Serializer {
     public <T> T deserialize(byte[] bytes, Class<T> type) throws IOException {
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
         Input input = new Input(byteArrayInputStream);
-        T result = KRYO_THREAD_LOCAL.get().readObject(input, type);
+        T result = (T)KRYO_THREAD_LOCAL.get().readClassAndObject(input);
         input.close();
         return result;
     }

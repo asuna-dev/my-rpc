@@ -23,17 +23,17 @@ public class EasyConsumerExample {
 
         log.info("User: {}", user);
 
-        Thread thread = new Thread(() -> {
-            while (true) {
-                log.info("heartbeat");
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        });
-        thread.start();
-        thread.join();
+        // Thread thread = new Thread(() -> {
+        //     while (true) {
+        //         log.info("heartbeat");
+        //         try {
+        //             Thread.sleep(5000);
+        //         } catch (InterruptedException e) {
+        //             throw new RuntimeException(e);
+        //         }
+        //     }
+        // });
+        // thread.start();
+        // thread.join();
     }
 }
