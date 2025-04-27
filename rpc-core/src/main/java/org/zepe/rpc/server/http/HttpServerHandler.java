@@ -9,13 +9,11 @@ import org.zepe.rpc.RpcApplication;
 import org.zepe.rpc.model.RpcRequest;
 import org.zepe.rpc.model.RpcResponse;
 import org.zepe.rpc.model.RpcStatusCode;
-import org.zepe.rpc.registry.LocalRegistry;
 import org.zepe.rpc.serializer.Serializer;
 import org.zepe.rpc.serializer.SerializerFactory;
 import org.zepe.rpc.server.RpcRequestHandler;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
 
 /**
  * @author zzpus

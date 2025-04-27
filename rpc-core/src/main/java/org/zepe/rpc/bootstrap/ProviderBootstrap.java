@@ -19,14 +19,14 @@ import java.util.List;
  */
 @Slf4j
 public class ProviderBootstrap {
-    public static void init(List<ServiceLocalRegisterInfo<?>> serviceLocalRegisterInfos) {
+    public static void init(List<ServiceLocalRegisterInfo> serviceLocalRegisterInfos) {
         RpcApplication.init();
 
         final RpcConfig rpcConfig = RpcApplication.getRpcConfig();
 
-        for (ServiceLocalRegisterInfo<?> svc : serviceLocalRegisterInfos) {
+        for (ServiceLocalRegisterInfo svc : serviceLocalRegisterInfos) {
             // 本地注册
-            LocalRegistry.register(svc.getServiceName(), svc.getImplClass());
+            LocalRegistry.register(svc.getServiceName(), svc.getImplInstance());
             // 服务中心注册
             RegistryConfig registryConfig = rpcConfig.getRegistryConfig();
             Registry registry = RegistryFactory.getInstance(registryConfig.getRegistry());

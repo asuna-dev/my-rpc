@@ -30,7 +30,7 @@ public class RpcProviderBootstrap implements BeanPostProcessor {
             String svcName = interfaceClass.getName();
             String svcVersion = rpcService.serviceVersion();
 
-            LocalRegistry.register(svcName, beanClass);
+            LocalRegistry.register(svcName, bean);
 
             RpcConfig rpcConfig = RpcApplication.getRpcConfig();
 

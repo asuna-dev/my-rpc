@@ -12,8 +12,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ServiceLocalRegisterInfo<T> {
+public class ServiceLocalRegisterInfo {
     private String serviceName;
-    private Class<? extends T> implClass;
+    private Object implInstance;
     private String serviceVersion;
 }

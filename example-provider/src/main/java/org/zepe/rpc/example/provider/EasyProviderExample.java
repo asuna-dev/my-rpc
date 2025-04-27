@@ -21,10 +21,10 @@ import java.util.List;
  */
 public class EasyProviderExample {
     public static void main(String[] args) throws Exception {
-        List<ServiceLocalRegisterInfo<?>> svcs = new ArrayList<>();
-        svcs.add(new ServiceLocalRegisterInfo<>(UserService.class.getName(), UserServiceImpl.class,
+        List<ServiceLocalRegisterInfo> svcs = new ArrayList<>();
+        svcs.add(new ServiceLocalRegisterInfo(UserService.class.getName(), new UserServiceImpl(),
             RpcConstant.DEFAULT_SERVICE_VERSION));
-        svcs.add(new ServiceLocalRegisterInfo<>(ComputeService.class.getName(), ComputeServiceImpl.class,
+        svcs.add(new ServiceLocalRegisterInfo(ComputeService.class.getName(), new ComputeServiceImpl(),
             RpcConstant.DEFAULT_SERVICE_VERSION));
 
         ProviderBootstrap.init(svcs);

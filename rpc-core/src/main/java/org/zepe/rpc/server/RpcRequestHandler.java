@@ -17,9 +17,9 @@ public class RpcRequestHandler {
         RpcResponse response;
 
         try {
-            Class<?> service = LocalRegistry.getService(request.getServiceName());
-            Method method = service.getMethod(request.getMethodName(), request.getParameterTypes());
-            Object result = method.invoke(service.getDeclaredConstructor().newInstance(), request.getArgs());
+            Object service = LocalRegistry.getService(request.getServiceName());
+            Method method = service.getClass().getMethod(request.getMethodName(), request.getParameterTypes());
+            Object result = method.invoke(service, request.getArgs());
             response = RpcResponse.success(result, method.getReturnType());
 
         } catch (Exception e) {

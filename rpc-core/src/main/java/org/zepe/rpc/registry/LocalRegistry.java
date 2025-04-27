@@ -13,14 +13,14 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public class LocalRegistry {
 
-    private static final Map<String, Class<?>> registry = new ConcurrentHashMap<>();
+    private static final Map<String, Object> registry = new ConcurrentHashMap<>();
 
-    public static void register(String serviceName, Class<?> implClass) {
-        log.info("register service: {} -> {}", serviceName, implClass.getName());
-        registry.put(serviceName, implClass);
+    public static void register(String serviceName, Object implInstance) {
+        log.info("register service: {} -> {}", serviceName, implInstance.getClass().getName());
+        registry.put(serviceName, implInstance);
     }
 
-    public static Class<?> getService(String serviceName) {
+    public static Object getService(String serviceName) {
         return registry.get(serviceName);
     }
 
