@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.zepe.rpc.example.common.model.User;
-import org.zepe.rpc.example.provider.UserServiceImpl;
+import org.zepe.rpc.example.provider.service.UserServiceImpl;
 
 import static org.junit.jupiter.api.Assertions.*;
 

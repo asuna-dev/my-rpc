@@ -34,6 +34,26 @@ import java.util.Map;
  */
 @Slf4j
 public class ServiceProxy implements InvocationHandler {
+    private String serviceVersion = RpcConstant.DEFAULT_SERVICE_VERSION;
+    // private String serviceGroup = RpcConstant.DEFAULT_SERVICE_GROUP;
+    private LoadBalancer loadBalancer = LoadBalancerFactory.getInstance("roundRobin");
+    private RetryStrategy retryStrategy = RetryStrategyFactory.getInstance("no");
+    private TolerantStrategy tolerantStrategy = TolerantStrategyFactory.getInstance("failFast");
+
+    public ServiceProxy() {
+
+    }
+
+    public ServiceProxy(Map<String, Object> properties) {
+        this.serviceVersion = (String)properties.getOrDefault("serviceVersion", RpcConstant.DEFAULT_SERVICE_VERSION);
+        // this.serviceGroup = (String)properties.getOrDefault("serviceGroup", RpcConstant.DEFAULT_SERVICE_GROUP);
+        this.loadBalancer =
+            (LoadBalancer)properties.getOrDefault("loadBalancer", LoadBalancerFactory.getInstance("roundRobin"));
+        this.retryStrategy =
+            (RetryStrategy)properties.getOrDefault("retryStrategy", RetryStrategyFactory.getInstance("no"));
+        this.tolerantStrategy = (TolerantStrategy)properties.getOrDefault("tolerantStrategy",
+            TolerantStrategyFactory.getInstance("failFast"));
+    }
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
@@ -55,27 +75,25 @@ public class ServiceProxy implements InvocationHandler {
 
         ServiceMetaInfo serviceMetaInfo = new ServiceMetaInfo();
         serviceMetaInfo.setServiceName(serviceName);
-        serviceMetaInfo.setServiceVersion(RpcConstant.DEFAULT_SERVICE_VERSION);
+        serviceMetaInfo.setServiceVersion(this.serviceVersion);
+        serviceMetaInfo.setServiceGroup(rpcConfig.getGroup());
 
         List<ServiceMetaInfo> serviceMetaInfos = registry.serviceDiscovery(serviceMetaInfo.getServiceKey());
-        if (CollUtil.isEmpty(serviceMetaInfos)) {
-            throw new RuntimeException("service unavailable: " + serviceName);
-        }
+        // if (CollUtil.isEmpty(serviceMetaInfos)) {
+        //     throw new RuntimeException("service unavailable: " + serviceName);
+        // }
 
-        final LoadBalancer loadBalancer = LoadBalancerFactory.getInstance(rpcConfig.getLoadBalancer());
         Map<String, Object> requestArgs = new HashMap<>();
         requestArgs.put("methodName", rpcRequest.getMethodName());
 
-        RetryStrategy retryStrategy = RetryStrategyFactory.getInstance(rpcConfig.getRetryStrategy());
-        final ServiceMetaInfo svc = loadBalancer.select(requestArgs, serviceMetaInfos);
+        final ServiceMetaInfo svc = this.loadBalancer.select(requestArgs, serviceMetaInfos);
         RpcResponse rpcResponse;
         try {
-            rpcResponse = retryStrategy.doRetry(() -> VertxTcpClient.doRequest(rpcRequest, svc));
+            rpcResponse = this.retryStrategy.doRetry(() -> VertxTcpClient.doRequest(rpcRequest, svc));
             return rpcResponse.getData();
 
         } catch (Exception e) {
-            TolerantStrategy tolerantStrategy = TolerantStrategyFactory.getInstance(rpcConfig.getTolerantStrategy());
-            rpcResponse = tolerantStrategy.doTolerant(null, e);
+            rpcResponse = this.tolerantStrategy.doTolerant(null, e);
         }
         return rpcResponse.getData();
     }
