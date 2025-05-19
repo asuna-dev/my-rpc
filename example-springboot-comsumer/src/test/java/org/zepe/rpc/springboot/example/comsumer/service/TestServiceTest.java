@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.zepe.rpc.example.common.model.User;
+import org.zepe.rpc.springboot.example.consumer.service.TestService;
 
 /**
  * @author zzpus

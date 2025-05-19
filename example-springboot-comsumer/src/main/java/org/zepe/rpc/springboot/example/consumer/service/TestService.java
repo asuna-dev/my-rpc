@@ -1,4 +1,4 @@
-package org.zepe.rpc.springboot.example.comsumer.service;
+package org.zepe.rpc.springboot.example.consumer.service;
 
 import org.springframework.stereotype.Service;
 import org.zepe.rpc.example.common.model.User;

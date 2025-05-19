@@ -64,7 +64,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${spring-boot.version}</version>
                 <configuration>
-                    <mainClass>org.zepe.rpc.springboot.example.comsumer.ExampleSpringbootComsumerApplication</mainClass>
+                    <mainClass>org.zepe.rpc.springboot.example.consumer.ExampleSpringbootConsumerApplication</mainClass>
                     <skip>true</skip>
                 </configuration>
                 <executions>
